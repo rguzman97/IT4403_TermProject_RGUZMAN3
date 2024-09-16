@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Milestone 1</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='mainstylesheet.css'>
+</head>
+<body>
+    <li class="navbar_items">
+        <a href="/index.html" class="navbar_links" id="home">Back to Home</a>
+    </li>
+    <div id="myData"></div>
+    <script>
+        //This works by calling the JSON file with a fetch method, parsing it with the first 'then' method then assigning it to the 
+        //string 'jsonViewer' via the stringify method
+        fetch('google-books-book.json')
+            .then(function (responseText) {
+                return responseText.json();
+            })
+            .then(function (data) {
+                const jsonViewer = document.getElementById('myData');
+                jsonViewer.textContent = JSON.stringify(data, null, 10);
+            })
+            .catch(function (error) {
+                console.log('error: ' + error);
+            });
+    </script>
+</body>
+</html>
