@@ -4,54 +4,26 @@
     <title>Milestone 1</title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <!-- <link rel='stylesheet' type='text/css' media='screen' href='mainstylesheet.css'> -->
 </head>
 <body>
     <li class="nav_items">
         <a href="index.html" class="nav_links" id="home">Back to Home</a>
     </li>
-    <div id="myData"></div>
+    <pre id="myData"></pre> <!--'Pre' maintains the indentation and formatting of the JSON -->
     <script>
+        
         //This works by calling the JSON file with a fetch method, parsing it with the first 'then' method, then assigning it to the 
-        //string 'jsonViewer' via the stringify method
+        //string 'booksViewer' via the stringify method  
 
-        function displayData(data) {
-            const container = document.getElementById('myData');
-            
-            // Loop through each object in the JSON array
-            data.forEach(item => {
-                const jsonString = JSON.stringify(item, null, 2);  // Convert each entry to string with formatting
-                const pre = document.createElement('pre');  // Create a <pre> tag for formatted output
-                pre.textContent = jsonString;  // Set the JSON string as the content of the <pre> tag
-                container.appendChild(pre);  // Append the <pre> to the container
-            });
-        }
+        fetch('google-books-book.json')
+            .then(function (res) {
+                return res.json();
+            })
+            .then(data => {
+                const booksViewer = document.getElementById('myData');
+                booksViewer.textContent = JSON.stringify(data, null, 2); // Indentation set to 2 spaces
+            })
 
-        // Call the function to display the JSON data
-        displayData(google-books-book.json);
-
-
-
-        // const jsonString = JSON.stringify(google-books-book.json, null, 2);
-
-        // const container = document.getElementById('myData');
-        // const pre = document.createElement('pre');  // Use <pre> to maintain formatting
-        // pre.textContent = jsonString;
-        // container.appendChild(pre);
-
-
-
-        // fetch('google-books-book.json')
-        //     .then(function (responseText) {
-        //         return responseText.json();
-        //     })
-        //     .then(function (data) {
-        //         const jsonViewer = document.getElementById('myData');
-        //         jsonViewer.textContent = JSON.stringify(data, null, 10);
-        //     })
-        //     .catch(function (error) {
-        //         console.log('error: ' + error);
-        //     });
     </script>
 </body>
 </html>
