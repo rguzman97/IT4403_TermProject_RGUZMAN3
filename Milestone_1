@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IT 4403 Ryan Guzman</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='mainstylesheet.css'>
+</head>
+<body>
+    <li class="navbar_items">
+        <a href="/index.html" class="navbar_links" id="home">Back to Home</a>
+    </li>
+    <h1>Select an option to view the JSON file of either book</h1>
+    <nav class="navbar">
+        <div class="navbar_container">
+            <ul class="navbar_menu">
+                <li class="navbar_items">
+                    <a href="/milestone1_folder/firstbook.html" class="navbar_links" id="one">google-books-book</a>
+                </li>
+                <li class="navbar_items">
+                    <a href="/milestone1_folder/secondbook.html" class="navbar_links" id="two">google-books-search</a>
+                </li>
+                <li class="navbar_items">
+                    <a href="/milestone1_folder/thirdbook.html" class="navbar_links" id="three">it-ebooks-search</a>
+                </li>
+                <li class="navbar_items">
+                    <a href="/milestone1_folder/fourthbook.html" class="navbar_links" id="four">openlibrary-book</a>
+                </li>
+                <li class="navbar_items">
+                    <a href="/milestone1_folder/fithbook.html" class="navbar_links" id="five">openlibrary-search</a>
+                </li> 
+            </ul> 
+        </div>
+    </nav>
+
+</body>
+</html>
