@@ -12,16 +12,16 @@
     <pre id="myData"></pre> <!--'Pre' maintains the indentation and formatting of the JSON -->
     <script>
 
-        //This works by calling the JSON file with a fetch method, parsing it with the first 'then' method, then assigning it to the 
-        //string 'booksViewer' via the stringify method  
+        //This works by calling the JSON file with a fetch method, parsing it with the first 'then' method, and then 
+        //displays the formatted data inside an HTML element
 
         fetch('google-books-book.json')
-            .then(function (res) {
+            .then(function (res) { //Data parser
                 return res.json();
             })
             .then(data => {
-                const booksViewer = document.getElementById('myData');
-                booksViewer.textContent = JSON.stringify(data, null, 2); // Indentation set to 2 spaces
+                const booksViewer = document.getElementById('myData'); //This reserves 'myData' to display the JSON data.
+                booksViewer.textContent = JSON.stringify(data, null, 2); // The stringify method ensures the data is indented for readability. Indentation is set to 2 spaces
             })
 
     </script>
