@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Milestone 1</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <li class="nav_items">
+        <a href="index.html" class="nav_links" id="home">Back to Home</a>
+    </li>
+    <pre id="myData"></pre> <!--'Pre' maintains the indentation and formatting of the JSON -->
+    <script>
+        
+        //This works by calling the JSON file with a fetch method, parsing it with the first 'then' method, then assigning it to the 
+        //string 'booksViewer' via the stringify method  
+
+        fetch('it-ebooks-search.json')
+            .then(function (res) {
+                return res.json();
+            })
+            .then(data => {
+                const booksViewer = document.getElementById('myData');
+                booksViewer.textContent = JSON.stringify(data, null, 2); // Indentation set to 2 spaces
+            })
+
+    </script>
+</body>
+</html>
