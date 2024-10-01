@@ -4,12 +4,14 @@
     <title>books search</title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel="stylesheet" href="styleSheet.css">
+    <link rel="stylesheet" href="/styleSheet.css">
 </head>
 <body>
-    <li class="reverse_nav_items">
-        <a href="index.html" class="reverse_nav_links" id="home">Back to Home</a>
-    </li>
+    <ul>
+        <li class="reverse_nav_items">
+            <a href="milestoneTwo.html" class="reverse_nav_links" id="home">Back to Milestone One</a>
+        </li>
+    </ul>
 
     <h1>Book Details</h1>
 
@@ -32,15 +34,14 @@
     
             // Make api request
             fetch('https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(searchInput))
-                .then(function (response) {
-                    return response.json();
+                .then(function (res) {
+                    return res.json();
                 })
                 .then(function (data) {
                     booksDetail(data);
                 })
                 .catch(function (error) {
-                    console.log('An error occurred: ' + error);
-            });
+                    console.log('An error occurred: ' + error)});
         }
     
         function booksDetail(data) {

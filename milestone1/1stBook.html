@@ -4,7 +4,7 @@
     <title>Milestone 1</title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel="stylesheet" href="styleSheet.css">
+    <link rel="stylesheet" href="/styleSheet.css">
 </head>
 <body>
     <ul>
@@ -17,9 +17,9 @@
     <div id="secondMyData"></div>
     
     <script>
-        /* This code fetches the JSON, parses it, and sends it to 'tableGenerater'. The function creates a
-        table and iteratively populates cells in the row that corresponds to the json's key or value. If a value is an object,
-        it is passed to 'secondTableGenerater' which recursively creates a detailed table for nested structures.
+        /*This code works by fetching the json, parsing it, and sending it the function 'tableGenerater'. The function creates a
+        table and iteratively populates cells in the row that corresponds to the json's key or value. If a value is found it be an array,
+        it is passed to 'secondTableGenerater' where the array data is printed and the json key's value is displayed as a table header.
         */
 
         const table = document.getElementById('myData');
@@ -56,7 +56,6 @@
             }
         }
 
-        // Function to split the JSON into key-value pairs and print those next to each other in a table
         function secondTableGenerater(data, title) {
             // Create new table
             const secondaryTable = document.createElement('table');
@@ -68,7 +67,6 @@
             caption.textContent = `Details for ${title}`;
             secondaryTable.appendChild(caption);
 
-            // Create table rows for each key-value pair in the nested object/array
             for (const key in data) {
                 let row = secondaryTable.insertRow();
 
@@ -79,7 +77,6 @@
                 keyCell.textContent = key;
 
                 if (typeof data[key] === 'object' && data[key] !== null) {
-                    // Recursively handle nested objects or arrays
                     valueCell.textContent = "See Details";
                     secondTableGenerater(data[key], `${title} - ${key}`); // Recursive call
                 } else {
