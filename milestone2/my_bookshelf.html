@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="styleSheet.css">    
+</head>
+<body>
+    <script>
+        // Function to display the bookshelf
+        function displayBookshelf() {
+        var bookshelfDiv = document.getElementById('bookshelf');
+
+        // Clear previous bookshelf
+        bookshelfDiv.innerHTML = '';
+
+        // Loop through the books array and create HTML elements for each book
+        for (var i = 0; i < books.length; i++) {
+            var book = books[i];
+
+            var bookElement = document.createElement('div');
+            bookElement.className = 'book';
+
+            var titleElement = document.createElement('h2');
+            titleElement.textContent = book.title;
+            bookElement.appendChild(titleElement);
+
+            var authorElement = document.createElement('p');
+            authorElement.textContent = 'Author: ' + book.author;
+            bookElement.appendChild(authorElement);
+
+            var descriptionElement = document.createElement('p');
+            descriptionElement.textContent = 'Description: ' + book.description;
+            bookElement.appendChild(descriptionElement);
+
+            bookshelfDiv.appendChild(bookElement);
+            }
+        }
+
+        // Call the displayBookshelf function to initially populate the bookshelf
+        displayBookshelf();
+    </script>
+</body>
+</html>

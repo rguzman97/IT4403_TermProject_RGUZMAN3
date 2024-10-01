@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>books search</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="styleSheet.css">
+</head>
+<body>
+    <li class="reverse_nav_items">
+        <a href="index.html" class="reverse_nav_links" id="home">Back to Home</a>
+    </li>
+
+    <h1>Book Details</h1>
+
+    <form onsubmit="bookSearch(event)">
+        <fieldset>
+            <label for="search_input">Search for a book:</label>
+            <input type="text" id="search_input"/>
+            <input type="submit"></input>
+        </fieldset>
+    </form>
+  
+    <div id="book_details"></div>
+  
+    <script>
+        function bookSearch(event) {
+            event.preventDefault();
+    
+            // Get users search 
+            var searchInput = document.getElementById('search_input').value;
+    
+            // Make api request
+            fetch('https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(searchInput))
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    booksDetail(data);
+                })
+                .catch(function (error) {
+                    console.log('An error occurred: ' + error);
+            });
+        }
+    
+        function booksDetail(data) {
+            var book_details = document.getElementById('book_details');
+
+            var chosen_book = data.items[0].volumeInfo; // Get first book 
+    
+            // Create the HTML elements to display the book details
+            // this displays the book title with reference to the other file
+            var book_title = document.createElement('h2');
+            book_title.textContent = chosen_book.title;
+            book_details.appendChild(book_title).href="/";
+            
+            //this displays the book image 
+            if (chosen_book.imageLinks && chosen_book.imageLinks.thumbnail) {
+                    var book_thumbnail = document.createElement('img');
+                    book_thumbnail.src = chosen_book.imageLinks.thumbnail;
+                    book_details.appendChild(book_thumbnail);
+            }
+    
+            for (var property in chosen_book) {
+                if (chosen_book.hasOwnProperty(property)) {
+                    var descriptor = document.createElement('p');
+                    descriptor.textContent = property + ': ' + chosen_book[property];
+                    book_details.appendChild(descriptor);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Milestone 1</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="styleSheet.css">
+</head>
+<body>
+    <ul>
+        <li class="reverse_nav_items">
+            <a href="milestoneOne.html" class="reverse_nav_links" id="home">Back to Milestone One</a>
+        </li>
+    </ul>
+
+    <table id="myData" border="1"></table>
+    <div id="secondMyData"></div>
+    
+    <script>
+        /* This code fetches the JSON, parses it, and sends it to 'tableGenerater'. The function creates a
+        table and iteratively populates cells in the row that corresponds to the json's key or value. If a value is an object,
+        it is passed to 'secondTableGenerater' which recursively creates a detailed table for nested structures.
+        */
+
+        const table = document.getElementById('myData');
+        const secondTableContainer = document.getElementById('secondMyData'); // Container for additional tables
+
+        // Fetching the JSON data
+        fetch('google-books-book.json')
+            .then(function (res) { // Data parser
+                return res.json();
+            })
+            .then(data => {
+                tableGenerater(data); // Generate the main table
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        // Function to generate the main table
+        function tableGenerater(data) {
+            for (const key in data) {
+                let row = table.insertRow();
+
+                // Create cells for key and value
+                let keyCell = row.insertCell();
+                let valueCell = row.insertCell();
+
+                keyCell.textContent = key;
+                
+                if (typeof data[key] === 'object' && data[key] !== null) {
+                    // If the value is an object or array, handle separately
+                    valueCell.textContent = "See Details";
+                    secondTableGenerater(data[key], key); // Generate secondary table
+                } else {
+                    valueCell.textContent = data[key];
+                }
+            }
+        }
+
+        // Function to split the JSON into key-value pairs and print those next to each other in a table
+        function secondTableGenerater(data, title) {
+            // Create new table
+            const secondaryTable = document.createElement('table');
+            secondaryTable.border = 1;
+            secondaryTable.style.marginTop = '20px'; // Add spacing between tables
+
+            // Add caption with title
+            const caption = document.createElement('caption');
+            caption.textContent = `Details for ${title}`;
+            secondaryTable.appendChild(caption);
+
+            // Create table rows for each key-value pair in the nested object/array
+            for (const key in data) {
+                let row = secondaryTable.insertRow();
+
+                // Create cells for key and value
+                let keyCell = row.insertCell();
+                let valueCell = row.insertCell();
+
+                keyCell.textContent = key;
+
+                if (typeof data[key] === 'object' && data[key] !== null) {
+                    // Recursively handle nested objects or arrays
+                    valueCell.textContent = "See Details";
+                    secondTableGenerater(data[key], `${title} - ${key}`); // Recursive call
+                } else {
+                    valueCell.textContent = data[key];
+                }
+            }
+
+            // Append the secondary table to the container
+            secondTableContainer.appendChild(secondaryTable);
+        }
+    </script>
+</body>
+
+</html>

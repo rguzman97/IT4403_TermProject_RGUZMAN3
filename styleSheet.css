@@ -1,0 +1,105 @@
+
+body {
+    background-color: black;
+    color: white;
+    text-align: left;
+    font-family: Arial, sans-serif;
+}
+/* these entries represent styling for the navagation button in 1st & 2nd book */
+.reverse_nav_items {
+    list-style-type: none;
+    padding: 10px;
+}
+
+.reverse_nav_links {
+    background-color: red; 
+    color: white; 
+    padding: 10px 20px; 
+    text-decoration: none;
+    border-radius: 5px; 
+    display: inline-block; 
+
+}
+
+.reverse_nav_links:hover {
+    background-color: darkred; /* Darker red on hover */
+}
+
+
+
+/*
+.nav_{
+    background: red;
+    height: 160px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    font-size: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.nav_container {
+    display: flex;
+    justify-content: space-between;
+    height: 160px;
+    z-index: 1;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 50px;
+}
+
+.nav_menu {
+    display: flex;
+    align-items: flex-end;
+    list-style: none;
+    text-align: center;
+}
+.nav_item {
+    height: 60px;
+}
+.nav_links {
+    color: white;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    text-decoration: none;
+    padding: 0 20px;
+    height: 100%;
+}
+    
+/*
+.nav_items {
+    list-style-type: none;
+    margin: 20px 0;
+    padding: 0;
+}
+
+.nav_links {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff5733;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.nav_links:hover {
+    background-color: #c13d27;
+}
+
+#myData {
+    margin-top: 20px;
+    background-color: #333;
+    color: #0f0;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    text-align: center;
+    white-space: pre-wrap; 
+}/* Ensures preformatted text stays formatted */
+
