@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>books search</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="/styleSheet.css">
+</head>
+<body>
+    <ul>
+        <li class="reverse_nav_items">
+            <a href="milestoneTwo.html" class="reverse_nav_links" id="home">Back to Milestone Two</a>
+        </li>
+    </ul>
+
+    <h1>Book Search</h1>
+
+    <form onsubmit="return bookSearch(event)">
+        <fieldset>
+            <label for="search_input">Search for a book:</label>
+            <input type="text" id="search_input"/>
+            <input type="submit"></input>
+        </fieldset>
+    </form>
+  
+    <div id="book_display"></div>
+
+    <script>
+       
+        const searchInput = document.getElementById('search_input');
+        const buttonContainer = document.getElementById('book_display');
+
+        function bookSearch(event) {
+            event.preventDefault(); // Prevent form from submitting normally
+
+            // Clear the previous search results
+            buttonContainer.innerHTML = '';
+
+            // Get the user's search query
+            const query = searchInput.value;
+
+            // Make the API request with the user's search query
+            fetch('https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=40&startIndex=0')
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(data => {
+                    bookSearches(data);
+                })
+                .catch(error => {
+                    alert('Warning: API limit exceded!');
+                    console.error(error);
+                });
+        }
+    
+        function bookSearches(data) {
+            data.items.forEach((category, index) => {
+
+                const button = document.createElement('button');
+                const img = document.createElement('img');
+
+                img.src = category.volumeInfo.imageLinks.thumbnail;  // Set the image source
+                img.style.width = '150px';    // Example width
+                img.style.height = '200px';   // Example height
+
+                // Create a span for the author's name
+                const author = document.createElement('span');
+                author.innerText = `Author: ${category.volumeInfo.authors}`;
+                author.style.display = 'block';  // Display as block element
+
+                // Append the image and author name to the button
+                button.appendChild(img);
+                button.appendChild(document.createElement('br'));  // Line break
+                button.appendChild(author);
+
+        
+                // Pass the name of the choosen book so a new API request can be made
+                button.addEventListener('click', () => {
+                    const bookTitle = category.volumeInfo.title;
+                    var apiRequest = bookTitle;
+
+                    window.location.href = `book_details.html?url=${apiRequest}`;
+                });
+
+
+                // Append the button to the container
+                buttonContainer.appendChild(button);
+                
+            }); 
+        }
+    </script>
+</body>
+</html>
