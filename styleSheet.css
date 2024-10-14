@@ -63,6 +63,22 @@ body {
 }
 
 
+/* for milestone 3 */
+
+.book-title {
+    margin: 10px 0;
+}
+.pagination {
+    margin-top: 20px;
+}
+.page-link {
+    margin: 0 5px;
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+
 
 
 /*
