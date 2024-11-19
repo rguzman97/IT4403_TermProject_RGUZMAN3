@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IT 4403 Ryan Guzman</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="../styleSheet.css">    
+</head>
+<body>
+    <ul>
+        <li class="reverse_nav_items">
+            <a href="milestoneFour.html" class="reverse_nav_links" id="home">Back to Milestone Four</a>
+        </li>
+    </ul>
+
+    <button id="toggle-view-button">Switch to List View</button>
+
+    <!-- Mustache template for displaying search results -->
+    <script id="results-template" type="x-tmpl-mustache">
+        {{#books}}
+        <div class="book" data-id="{{id}}">
+            <h2>{{title}}</h2>
+            <img src="{{coverImage}}" alt="{{title}} cover">
+        </div>
+        {{/books}}
+    </script>
+
+    <div id="results-container"></div>
+
+    <!-- Mustache template for book details -->
+    <script id="book-details-template" type="x-tmpl-mustache">
+        <h2>{{title}}</h2>
+        <p>Author(s): {{authors}}</p>
+        <img src="{{coverImage}}" alt="{{title}} cover">
+        <p>Description: {{description}}</p>
+        <p>Publisher: {{publisher}}</p>
+        <p>PublishedDate: {{publishedDate}}</p>
+        <p>Industry Identifiers: </p>
+        <ul>
+            {{#industryIdentifiers}}
+            <li>{{type}}: {{identifier}}</li>
+            {{/industryIdentifiers}}
+        </ul>
+        <p>Page Count: {{pageCount}}</p>
+        <p>Print Type: {{printType}}</p>
+        <p>Categories: {{categories}}</p>
+        <p>Maturity Rating: {{maturityRating}}</p>
+        <p>Content Version: {{contentVersion}}</p>
+        <p>Language: {{language}}</p>
+        <p>Info Link: {{canonicalVolumeLink}}</p>
+        <p>Country: {{country}}</p>
+        <p>Viewability: {{viewability}}</p>
+        <p>Public Domain: {{publicDomain}}</p>
+        <p>Text To Speech Availabilty: {{textToSpeechPermission}}</p>
+        <p>E-Book Availabilty: {{epub}}</p>
+        <p>PDF Availabilty: {{pdf}}</p>
+        <p>Web Link: {{webReaderLink}}</p>
+        <p>Veiwing Status: {{accessViewStatus}}</p>
+    </script>
+
+    <div id="book-details-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+
+    <script>
+        const resultsContainer = document.getElementById('results-container');
+        const bookDetailsContainer = document.getElementById('book-details-container');
+        const toggleViewButton = document.getElementById('toggle-view-button');
+        const maxResults = 10;
+
+        // Automatically fetch data on page load
+        getBookData();
+
+        // Fetch data using AJAX
+        function getBookData() {
+            const url = 'https://www.googleapis.com/books/v1/users/104186410064639937582/bookshelves/1001/volumes';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    renderResults(data.items);
+                } else {
+                    console.error('Error fetching books:', xhr.status);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Error fetching books:', xhr.status);
+            };
+            xhr.send();
+        }
+
+        // Render results (list of books)
+        function renderResults(books) {
+            const template = document.getElementById('results-template').innerHTML;
+            const bookData = books.map(book => ({
+                id: book.id,
+                title: book.volumeInfo.title,
+                coverImage: book.volumeInfo.imageLinks?.thumbnail
+            }));
+            const rendered = Mustache.render(template, { books: bookData });
+            resultsContainer.innerHTML = rendered;
+
+            // Add click event listeners for each book to display details
+            document.querySelectorAll('.book').forEach(bookElement => {
+                    bookElement.addEventListener('click', function() {
+                        const bookId = bookElement.getAttribute('data-id');
+                        const selectedBook = books.find(b => b.id === bookId);
+                        displayBookDetails(selectedBook);
+                    });
+                });
+            }
+
+            // Display book details directly from the selected book data
+            function displayBookDetails(book) {
+                const bookDetails = {
+                    title: book.volumeInfo.title,
+                    authors: book.volumeInfo.authors?.join(', '),
+                    coverImage: book.volumeInfo.imageLinks?.thumbnail,
+                    description: book.volumeInfo.description,
+                    publisher: book.volumeInfo.publisher,
+                    publishedDate: book.volumeInfo.publishedDate,
+                    industryIdentifiers: book.volumeInfo.industryIdentifiers,
+                    pageCount: book.volumeInfo.pageCount,
+                    printType: book.volumeInfo.printType,
+                    categories: book.volumeInfo.categories,
+                    maturityRating: book.volumeInfo.maturityRating,
+                    contentVersion: book.volumeInfo.contentVersion,
+                    language: book.volumeInfo.language,
+                    canonicalVolumeLink: book.volumeInfo.canonicalVolumeLink,
+                    country: book.accessInfo.country,
+                    viewability: book.accessInfo.viewability,
+                    publicDomain: book.accessInfo.publicDomain,
+                    textToSpeechPermission: book.accessInfo.textToSpeechPermission,
+                    epub: book.accessInfo.epub?.isAvailable,
+                    pdf: book.accessInfo.pdf?.isAvailable,
+                    webReaderLink: book.accessInfo.webReaderLink,
+                    accessViewStatus: book.accessInfo.accessViewStatus
+                };
+                const template = document.getElementById('book-details-template').innerHTML;
+                const rendered = Mustache.render(template, bookDetails);
+                bookDetailsContainer.innerHTML = rendered;
+            }
+
+        // Toggle between grid and list view
+        toggleViewButton.addEventListener('click', function() {
+            const body = document.body;
+
+            if (body.classList.contains('list-view')) {
+                body.classList.remove('list-view');
+                toggleViewButton.textContent = 'Switch to List View';
+            } else {
+                body.classList.add('list-view');
+                toggleViewButton.textContent = 'Switch to Grid View';
+            }
+        });
+    </script>
+</body>
+</html>

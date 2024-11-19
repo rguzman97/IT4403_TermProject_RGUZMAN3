@@ -111,5 +111,54 @@ body {
 }
 
 
+/* Default grid view styling */
+#results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fil, minmax(300px, 1fr));
+    gap: 16px;
+}
 
+.book {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    background-color: gray;
+}
 
+.book img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* List view styling */
+.list-view #results-container {
+    display: list-item;
+}
+
+.list-view .book {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.list-view .book img {
+    max-width: 100px;
+    margin-right: 10px;
+}
+
+#toggle-view-button {
+    margin: 40px 0;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#toggle-view-button:hover {
+    background-color: #0056b3;
+}
