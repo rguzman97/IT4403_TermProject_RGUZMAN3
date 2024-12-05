@@ -7,28 +7,219 @@
     <link rel="stylesheet" href="styleSheet.css">    
 </head>
 <body>
-    <h1>IT 4403 Ryan Guzman</h1>
-    <p>Description: The purpose of this website is to demenstrate knowledge via the four milestones that are to be completed this semester</p>
-    <p>Affiliation: Kennesaw State University, Marrietta Campus</p>
-    <p>Course Information: IT 44033 Fall 2024</p>
-    <p>Link: <a href="https://ccse.kennesaw.edu/it/">https://ccse.kennesaw.edu/it/</a></p>
-    <nav class="nav">
-        <div class="nav_container">
-            <ul class="nav_menu">
-                <li class="nav_items">
-                    <a href="milestone1/milestoneOne.html" class="nav_links" id="milestone1">Milestone One</a>
-                </li>
-                <li class="nav_items">
-                    <a href="milestone2/milestoneTwo.html" class="nav_links" id="milestone2">Milestone Two</a>
-                </li>
-                <li class="nav_items">
-                    <a href="milestone3/ajax_book_search.html" class="nav_links" id="milestone3">Milestone Three</a>
-                </li>
-                <li class="nav_items">
-                    <a href="milestone4/milestoneFour.html" class="nav_links" id="milestone4">Milestone Four</a>
-                </li>
-            </ul> 
-        </div>
+    <!-- navbar section -->
+    <nav class="navbar">
+        <img src="logo-1.png" alt="logo" id="navbar_logo">
+        <ul class="navbar_menu">
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="Search For Any Movie/TV Show's Details...">
+                <button id="search-button">Search</button>
+            </div>                
+        </ul> 
     </nav>
+
+    <section class="section">
+        <div class="carousel_wrapper">
+            <h1 id="carousel-heading"><b>Popular Movies:</b></h1>
+            <h2 id="carousel-heading-2">subheading</h2>
+            <div id="carousel-container"></div>
+        </div>      
+    </section>
+
+    <br>
+    
+    <!-- shape seperating sections-->
+    <div class="sepRectangle"></div> 
+
+    <section class="section">
+        <div class="results-wrapper">
+            <div id="results-container"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <br>
+    
+    <!-- shape seperating sections-->
+    <div class="sepRectangle"></div> 
+
+    <section class="section">
+        <div id="book-details-container"></div>
+    </section>
+    
+
+    <script>
+        const carouselContainer = document.getElementById("carousel-container");
+
+        // Automatically fetch data on page load
+        getBookData();
+
+        // Fetch data using AJAX
+        function getBookData() {
+            const url = 'https://www.googleapis.com/books/v1/users/104186410064639937582/bookshelves/1001/volumes';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    displayMovies(data.items);
+                    renderPagination(1);
+                } else {
+                    console.error('Error fetching books:', xhr.status);
+                }
+            };
+            xhr.send();
+        }
+
+        // Dynamically add movie details to the carousel
+        function displayMovies(movies) {
+            movies.forEach(movie => {
+                const card = document.createElement("div");
+                card.classList.add("carousel-card");
+
+                
+                // Set background image to the thumbnail
+                card.style.backgroundImage = `url(${movie.volumeInfo.imageLinks.thumbnail})`;
+                card.style.backgroundSize = "cover";
+                card.style.backgroundPosition = "center";
+
+                // Add overlay for text
+                const textOverlay = document.createElement("div");
+                textOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+                textOverlay.style.color = "white";
+                textOverlay.style.padding = "10px";
+                textOverlay.style.borderRadius = "8px";
+                textOverlay.innerHTML = `
+                    <h3>${movie.volumeInfo.title}</h3>
+                    <p>Director: ${movie.volumeInfo.authors}</p>
+                `;
+
+                card.appendChild(textOverlay);
+                carouselContainer.appendChild(card);
+
+                //card.addEventListener('click', function() {
+                //        displayBookDetails(movie);
+                //});
+            });
+        }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            //variables to keep track of the current search query and result page
+            const pagination = document.getElementById('pagination');
+            const resultsContainer = document.getElementById('results-container');
+            const bookDetailsContainer = document.getElementById('book-details-container');
+            const toggleViewButton = document.getElementById('toggle-view-button')
+            const maxResults = 10;
+            const totalPages = 5;
+            let currentQuery = '';
+            let currentPage = 1;
+
+            // Function to handle the search button click
+            document.getElementById('search-button').addEventListener('click', function() {
+                currentQuery = document.getElementById('search-input').value.trim();
+                searchBooks(currentQuery, currentPage);
+            });
+
+            function searchBooks(query, page) {
+                const startIndex = (page - 1) * maxResults;
+                const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        renderResults(data.items);
+                        renderPagination(page);
+                    } else {
+                        console.error('Error fetching books:', xhr.status);
+                    }
+                };
+                xhr.send();
+            }
+
+            //this displays search results
+            function renderResults(books) {
+                
+                resultsContainer.innerHTML = '';
+
+                // Iterate over the books and display their information
+                for (let i = 0; i < books.length; i++) {
+                    const book = books[i];
+                    const title = book.volumeInfo.title;
+                    const coverImage = book.volumeInfo.imageLinks.thumbnail;
+
+                    // Create a div to hold each book's information
+                    const bookDiv = document.createElement('div');
+                    bookDiv.className = 'book';
+
+                    const titleElement = document.createElement('h2');
+                    titleElement.textContent = title;
+                    const coverImageElement = document.createElement('img');
+                    coverImageElement.src = coverImage;
+
+                    bookDiv.appendChild(titleElement);
+                    bookDiv.appendChild(coverImageElement);
+                    resultsContainer.appendChild(bookDiv);
+
+                    // Add a click event listener to display book details when clicked
+                    bookDiv.addEventListener('click', function() {
+                        displayBookDetails(book);
+                    });
+                }
+            }
+
+            //this displays book details
+            function displayBookDetails(book) {
+
+                bookDetailsContainer.innerHTML = '';
+
+                //important information 
+                const title = book.volumeInfo.title;
+                const authors = book.volumeInfo.authors?.join(', ');
+                const description = book.volumeInfo.description;
+                const coverImage = book.volumeInfo.imageLinks.thumbnail;
+
+                // elements to display the book details
+                const titleElement = document.createElement('h2');
+                titleElement.textContent = title;
+                const authorsElement = document.createElement('p');
+                authorsElement.textContent = 'Author(s): ' + authors;
+                const descriptionElement = document.createElement('p');
+                descriptionElement.textContent = description;
+                const coverImageElement = document.createElement('img');
+                coverImageElement.src = coverImage;
+
+                bookDetailsContainer.appendChild(titleElement);
+                bookDetailsContainer.appendChild(authorsElement);
+                bookDetailsContainer.appendChild(descriptionElement);
+                bookDetailsContainer.appendChild(coverImageElement);
+            }
+
+            function renderPagination(currentPage) {
+                pagination.innerHTML = ''; // Clear previous pagination
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLink = document.createElement('span');
+                    pageLink.classList.add('page-link');
+                    pageLink.textContent = i;
+
+                    if (i === currentPage) {
+                        pageLink.style.fontWeight = 'bold';
+                    }
+
+                    pageLink.addEventListener('click', function () {
+                        currentPage = i;
+                        searchBooks(currentQuery, currentPage);
+                    });
+
+                    pagination.appendChild(pageLink);
+                }
+            }
+
+            
+        });
+    </script>
 </body>
 </html>
