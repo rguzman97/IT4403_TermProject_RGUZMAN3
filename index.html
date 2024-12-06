@@ -21,18 +21,18 @@
     <section class="section">
         <div class="carousel_wrapper">
             <h1 id="carousel-heading"><b>Popular Movies:</b></h1>
-            <h2 id="carousel-heading-2">subheading</h2>
+            <h2 id="carousel-heading-2">These movies are the most popular around!</h2>
             <div id="carousel-container"></div>
         </div>      
     </section>
 
     <br>
-    
-    <!-- shape seperating sections-->
-    <div class="sepRectangle"></div> 
 
     <section class="section">
         <div class="results-wrapper">
+            <h1 id="carousel-heading"><b>Your Search Results:</b></h1>
+            <h2 id="carousel-heading-2">Simply use the search bar above to find details on your favorite movie!</h2>
+
             <div id="results-container"></div>
             <div class="pagination" id="pagination"></div>
         </div>
@@ -50,26 +50,34 @@
 
     <script>
         const carouselContainer = document.getElementById("carousel-container");
+        const bookDetailsContainer = document.getElementById("book-details-container");
+
+        const toggleViewButton = document.getElementById('toggle-view-button');
 
         // Automatically fetch data on page load
         getBookData();
 
         // Fetch data using AJAX
         function getBookData() {
-            const url = 'https://www.googleapis.com/books/v1/users/104186410064639937582/bookshelves/1001/volumes';
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    const data = JSON.parse(xhr.responseText);
-                    displayMovies(data.items);
-                    renderPagination(1);
-                } else {
-                    console.error('Error fetching books:', xhr.status);
+            const options = {
+            method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMmNjZDU0YmEyM2Y0OWNiZWI4M2ZkOGY1NjM3MzQzYSIsIm5iZiI6MTczMzE3OTkwNy4xNjksInN1YiI6IjY3NGUzYTAzYWY4MjQ4NjZmODExNjUwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.F3e8g8LFMupl6THhVTOzdMnTW_NIh9QwXoOoQIZcxbA'
                 }
-            };
-            xhr.send();
+            };            
+            // Make the API request with the user's search query
+            fetch('https://api.themoviedb.org/3/discover/movie?q=arrival&include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc', options)
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(data => {
+                    displayMovies(data.results);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         }
 
         // Dynamically add movie details to the carousel
@@ -78,38 +86,64 @@
                 const card = document.createElement("div");
                 card.classList.add("carousel-card");
 
-                
                 // Set background image to the thumbnail
-                card.style.backgroundImage = `url(${movie.volumeInfo.imageLinks.thumbnail})`;
+                card.style.backgroundImage = `url(https://image.tmdb.org/t/p/w500${movie.poster_path})`;
                 card.style.backgroundSize = "cover";
                 card.style.backgroundPosition = "center";
 
                 // Add overlay for text
                 const textOverlay = document.createElement("div");
-                textOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-                textOverlay.style.color = "white";
-                textOverlay.style.padding = "10px";
-                textOverlay.style.borderRadius = "8px";
+                textOverlay.classList.add("text-overlay");
                 textOverlay.innerHTML = `
-                    <h3>${movie.volumeInfo.title}</h3>
-                    <p>Director: ${movie.volumeInfo.authors}</p>
+                    <h3>${movie.original_title}</h3>
+                    <p>Release Date: ${movie.release_date}</p>
                 `;
 
                 card.appendChild(textOverlay);
                 carouselContainer.appendChild(card);
 
-                //card.addEventListener('click', function() {
-                //        displayBookDetails(movie);
-                //});
+                // Add click event to display book details
+                card.addEventListener('click', () => displayCarouselDetails(movie));
             });
+        }
+
+        function displayCarouselDetails(movie) {
+            bookDetailsContainer.innerHTML = '';
+
+            //important information 
+            const title = movie.original_title;
+            const lang = movie.original_language;
+            const description = movie.overview;
+            const releaseDate = movie.release_date;
+
+            // Elements to display the movie details
+            const titleElement = document.createElement('h2');
+            titleElement.textContent = title;
+
+            const langElement = document.createElement('p');
+            langElement.textContent = 'Original Language: ' + lang;
+
+            const descriptionElement = document.createElement('p');
+            descriptionElement.textContent = 'Description: ' + description;
+
+            const rsElement = document.createElement('p');
+            rsElement.textContent = 'Release Date: ' + releaseDate;
+
+            const coverImageElement = document.createElement('img');
+            coverImageElement.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+
+            // Append details to the container
+            bookDetailsContainer.appendChild(titleElement);
+            bookDetailsContainer.appendChild(langElement);
+            bookDetailsContainer.appendChild(descriptionElement);
+            bookDetailsContainer.appendChild(rsElement); 
+            bookDetailsContainer.appendChild(coverImageElement);
         }
         
         document.addEventListener("DOMContentLoaded", function() {
             //variables to keep track of the current search query and result page
             const pagination = document.getElementById('pagination');
             const resultsContainer = document.getElementById('results-container');
-            const bookDetailsContainer = document.getElementById('book-details-container');
-            const toggleViewButton = document.getElementById('toggle-view-button')
             const maxResults = 10;
             const totalPages = 5;
             let currentQuery = '';
@@ -118,86 +152,89 @@
             // Function to handle the search button click
             document.getElementById('search-button').addEventListener('click', function() {
                 currentQuery = document.getElementById('search-input').value.trim();
-                searchBooks(currentQuery, currentPage);
+                searchBooks(currentQuery);
             });
 
-            function searchBooks(query, page) {
-                const startIndex = (page - 1) * maxResults;
-                const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
+            
+            function searchBooks(query, page = 1) {
+                const apiKey = '22ccd54ba23f49cbeb83fd8f5637343a';
+                const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=en-US&page=${page}`;
 
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const data = JSON.parse(xhr.responseText);
-                        renderResults(data.items);
-                        renderPagination(page);
-                    } else {
-                        console.error('Error fetching books:', xhr.status);
-                    }
-                };
-                xhr.send();
+                // Make the API request with the user's search query and page number
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        resultsContainer.innerHTML = ''; // Clear previous results
+                        renderResults(data.results); // Render new results
+                        renderPagination(data.total_pages, page); // Update pagination
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
             }
 
             //this displays search results
-            function renderResults(books) {
-                
-                resultsContainer.innerHTML = '';
+            function renderResults(movies) {
+                movies.forEach(movie => {
+                    const card = document.createElement("div");
+                    card.classList.add("carousel-card");
 
-                // Iterate over the books and display their information
-                for (let i = 0; i < books.length; i++) {
-                    const book = books[i];
-                    const title = book.volumeInfo.title;
-                    const coverImage = book.volumeInfo.imageLinks.thumbnail;
+                    // Set background image to the thumbnail
+                    card.style.backgroundImage = `url(https://image.tmdb.org/t/p/w500${movie.poster_path})`;
+                    card.style.backgroundSize = "cover";
+                    card.style.backgroundPosition = "center";
 
-                    // Create a div to hold each book's information
-                    const bookDiv = document.createElement('div');
-                    bookDiv.className = 'book';
+                    // Add overlay for text
+                    const textOverlay = document.createElement("div");
+                    textOverlay.classList.add("text-overlay");
+                    textOverlay.innerHTML = `
+                        <h3>${movie.original_title}</h3>
+                        <p>Release Date: ${movie.release_date}</p>
+                    `;
 
-                    const titleElement = document.createElement('h2');
-                    titleElement.textContent = title;
-                    const coverImageElement = document.createElement('img');
-                    coverImageElement.src = coverImage;
+                    card.appendChild(textOverlay);
+                    resultsContainer.appendChild(card);
 
-                    bookDiv.appendChild(titleElement);
-                    bookDiv.appendChild(coverImageElement);
-                    resultsContainer.appendChild(bookDiv);
-
-                    // Add a click event listener to display book details when clicked
-                    bookDiv.addEventListener('click', function() {
-                        displayBookDetails(book);
-                    });
-                }
+                    // Add click event to display book details
+                    card.addEventListener('click', () => displayBookDetails(movie));
+                });
             }
 
             //this displays book details
-            function displayBookDetails(book) {
-
+            function displayBookDetails(movie) {
                 bookDetailsContainer.innerHTML = '';
 
                 //important information 
-                const title = book.volumeInfo.title;
-                const authors = book.volumeInfo.authors?.join(', ');
-                const description = book.volumeInfo.description;
-                const coverImage = book.volumeInfo.imageLinks.thumbnail;
+                const title = movie.original_title;
+                const lang = movie.original_language;
+                const description = movie.overview;
+                const releaseDate = movie.release_date;
 
-                // elements to display the book details
+                // Elements to display the movie details
                 const titleElement = document.createElement('h2');
                 titleElement.textContent = title;
-                const authorsElement = document.createElement('p');
-                authorsElement.textContent = 'Author(s): ' + authors;
-                const descriptionElement = document.createElement('p');
-                descriptionElement.textContent = description;
-                const coverImageElement = document.createElement('img');
-                coverImageElement.src = coverImage;
 
+                const langElement = document.createElement('p');
+                langElement.textContent = 'Original Language: ' + lang;
+
+                const descriptionElement = document.createElement('p');
+                descriptionElement.textContent = 'Description: ' + description;
+
+                const rsElement = document.createElement('p');
+                rsElement.textContent = 'Release Date: ' + releaseDate;
+
+                const coverImageElement = document.createElement('img');
+                coverImageElement.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+
+                // Append details to the container
                 bookDetailsContainer.appendChild(titleElement);
-                bookDetailsContainer.appendChild(authorsElement);
+                bookDetailsContainer.appendChild(langElement);
                 bookDetailsContainer.appendChild(descriptionElement);
+                bookDetailsContainer.appendChild(rsElement); 
                 bookDetailsContainer.appendChild(coverImageElement);
             }
 
-            function renderPagination(currentPage) {
+            function renderPagination(totalPages, currentPage) {
                 pagination.innerHTML = ''; // Clear previous pagination
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -210,15 +247,13 @@
                     }
 
                     pageLink.addEventListener('click', function () {
-                        currentPage = i;
-                        searchBooks(currentQuery, currentPage);
+                        currentPage = i; // Update the current page
+                        searchBooks(currentQuery, currentPage); // Fetch data for the selected page
                     });
 
                     pagination.appendChild(pageLink);
                 }
             }
-
-            
         });
     </script>
 </body>
